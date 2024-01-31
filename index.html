@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing Engine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="billing_logo.png">
+
+
+  <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+           font-family: 'Roboto', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .header, .footer {
+            height: 10%;
+            width: 100%;
+            background-color: black;
+        }
+
+        #date_time {
+            height: 100%;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-right: 45px;
+ }
+
+ #time {
+   margin-left: 35px;
+ }
+
+        #main {
+            background-color: #1c2033;
+            height: 80%;
+        width: 100%;
+        /* background-color: green; */
+        }
+
+        .logo {
+            height: 20%;
+             padding-top: 15px;
+             padding-bottom: 20px;
+             text-align: center;
+            /* color: white;
+            text-align: center;
+            padding-bottom: 25px;
+            font-weight: bold;
+            background-color: pink; */
+        }
+
+        .logo img {
+            height: 100%;
+            width: 200px;
+            object-fit: cover;
+        }
+
+       .flex_main {
+            width: 100%;
+            height: 80%;
+            /* background-color: yellow; */
+        }
+
+        .flex_left {
+            width: 38%;
+            height: 100%;
+        }
+
+        .flex_right {
+            width: 62%;
+            color: white;
+        }
+
+        .form-label {
+            /* font-weight: bold; */
+            color: white;
+        }
+
+        .button {
+            text-align: center;
+            margin-top: 55px;
+        }
+
+        .btn {
+            background-color: #0f6ef5;
+            color: white;
+            font-weight: bold;
+         }
+
+         .btn:hover {
+            background-color: white;
+            color: #0f6ef5;
+            font-weight: bold;
+         }
+
+         #item_table {
+           overflow-y: auto;
+         }
+
+         .header_name {
+            width: 50%;
+         }
+
+         .header_price {
+            width: 35%;
+         }
+
+         .header_action {
+            width: 15%;
+         }
+
+         .td_icon {
+            text-align: left;
+         }
+
+         #delete_button {
+            border: none;
+         }
+
+         .total {
+            height: 100%;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-right: 20%;
+         }
+
+         #total_cost {
+            margin-left: 15px;
+         }
+
+    </style>
+</head>
+ 
+<body>
+
+    <header class="header">
+        <div id="date_time">
+            <span id="date"></span>
+            <span id="time"></span>
+        </div>
+    </header>
+
+    <div class="container-fluid" id="main">
+<div class="logo">
+    <img src="billing_logo.png" alt="Billing Logo">
+</div>
+
+<div class="container-fluid d-flex flex_main">
+    <div class="flex_left">
+        <form class="needs-validation">
+            <div class="mt-4 mx-4">
+      <label for="item_name" class="form-label">Item Name:</label>
+      <input type="text" class="form-control" id="item_name" name="item_name" required>
+      <div class="valid-feedback">Valid.</div>
+      <div class="invalid-feedback">Please add Item Name.</div>
+    </div>
+
+     <div class="mt-5 mx-4">
+      <label for="item_price" class="form-label">Item Price:</label>
+      <input type="text" class="form-control" id="item_price" name="item_price" required>
+      <div class="valid-feedback">Valid.</div>
+      <div class="invalid-feedback">Please add Item Price.</div>
+    </div>
+        </form>
+
+        <div class="button">
+        <button class="btn px-3" onclick="addItem()">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="flex_right mt-2 mb-2">
+        <div class="ms-3 me-2" id="item_table">
+            
+        </div>
+    </div>
+
+</div>
+    </div>
+
+    <footer class="footer">
+        <div class="total">
+            <span>Total Cost:</span>
+            <span id="total_cost"></span>
+        </div>
+    </footer>
+
+    <script>
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        function updateDateTime() {
+        let dateText = "";
+        let timeText = "";
+        const date = new Date();
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        const hour = date.getHours();
+        const minute = date.getMinutes();
+        dateText = `${day}-${month}-${year}`;
+        timeText = `${hour}:${minute}`;
+         document.getElementById("date").innerHTML = dateText;
+        document.getElementById("time").innerHTML = timeText;
+        }
+
+        var itemMap = new Map();
+
+        showTable();
+
+        function addItem() {
+            const item_name = document.getElementById("item_name").value;
+            const item_price = document.getElementById("item_price").value;
+
+            if ( item_name === "" || item_price === "" ) {
+                alert(`Please add valid Item Name with Price.`);
+                document.getElementById("item_name").value = "";
+            document.getElementById("item_price").value = "";
+            }
+            else if ( itemMap.has(item_name) ) {
+                alert(`${item_name} already added to cart!!!`);
+                document.getElementById("item_name").value = "";
+            document.getElementById("item_price").value = "";
+            }
+            else {
+            itemMap.set(item_name, item_price);
+            document.getElementById("item_name").value = "";
+            document.getElementById("item_price").value = "";
+            }
+
+            showTable();
+        }
+
+
+        function showTable() {
+            if ( itemMap.size == 0 ) {
+                document.getElementById("item_table").style.height = "100%";
+                document.getElementById("item_table").style.display = "flex";
+                document.getElementById("item_table").style.justifyContent = "center";
+                document.getElementById("item_table").style.alignItems = "center";
+                document.getElementById("item_table").innerHTML = `<h4>No items are added to cart!!!</h4>`;
+                document.getElementById("total_cost").innerHTML = "";
+            } 
+             else {
+                document.getElementById("item_table").style.display = "block";
+                let total = 0;
+            let tableText = `<table class="table table-hover">
+                <thead>
+                    <tr>
+                      <th class="header_name">Item Name</th>
+                      <th class="header_price">Item Price</th>
+                      <th class="header_action">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>`;
+                  
+                itemMap.forEach(function(val, key) {
+                    tableText += `<tr>
+                        <td>${key}</td>
+                        <td>${val}</td>
+                        <td class="td_icon"><button id="delete_button" onclick="deleteItem('${key}')"><img src="delete_icon.png" width="20px" height="20px" alt="Delete Icon"></button></td>
+                        </tr>`;
+                        total += Number(val);
+                });
+
+                document.getElementById("total_cost").innerHTML = total;
+                document.getElementById("item_table").innerHTML = tableText + "</tbody></table>";
+            }
+        }
+
+        function deleteItem(key) {
+            if (itemMap.has(key)) {
+                itemMap.delete(key);
+            }
+            showTable();
+        }
+
+    </script>
+</body>
+</html>
